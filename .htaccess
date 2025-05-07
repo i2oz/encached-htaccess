@@ -35,81 +35,81 @@ FileETag None
 
 # 3) Performance (only if NOT using LiteSpeed)
 <IfModule !LiteSpeed>
-    <IfModule mod_expires.c>
-        ExpiresActive On
-        ExpiresDefault "access plus 1 month"
+  <IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresDefault "access plus 1 month"
 
-        # Stylesheets and Scripts
-        ExpiresByType text/css "access plus 1 year"
-        ExpiresByType application/javascript "access plus 1 year"
-        ExpiresByType application/x-javascript "access plus 1 year"
-        ExpiresByType text/javascript "access plus 1 year"
+    # Stylesheets and Scripts
+    ExpiresByType text/css "access plus 1 year"
+    ExpiresByType application/javascript "access plus 1 year"
+    ExpiresByType application/x-javascript "access plus 1 year"
+    ExpiresByType text/javascript "access plus 1 year"
 
-        # Data interchange formats
-        ExpiresByType application/atom+xml "access plus 1 hour"
-        ExpiresByType application/rss+xml "access plus 1 hour"
-        ExpiresByType application/rdf+xml "access plus 1 hour"
-        ExpiresByType application/json "access plus 0 seconds"
-        ExpiresByType application/ld+json "access plus 0 seconds"
-        ExpiresByType application/schema+json "access plus 0 seconds"
-        ExpiresByType application/vnd.geo+json "access plus 0 seconds"
-        ExpiresByType application/xml "access plus 0 seconds"
-        ExpiresByType text/xml "access plus 0 seconds"
-        ExpiresByType text/html "access plus 0 seconds"
+    # Data interchange formats
+    ExpiresByType application/atom+xml "access plus 1 hour"
+    ExpiresByType application/rss+xml "access plus 1 hour"
+    ExpiresByType application/rdf+xml "access plus 1 hour"
+    ExpiresByType application/json "access plus 0 seconds"
+    ExpiresByType application/ld+json "access plus 0 seconds"
+    ExpiresByType application/schema+json "access plus 0 seconds"
+    ExpiresByType application/vnd.geo+json "access plus 0 seconds"
+    ExpiresByType application/xml "access plus 0 seconds"
+    ExpiresByType text/xml "access plus 0 seconds"
+    ExpiresByType text/html "access plus 0 seconds"
 
-        # Media files (long-term caching)
-        ExpiresByType image/gif "access plus 1 year"
-        ExpiresByType image/jpeg "access plus 1 year"
-        ExpiresByType image/png "access plus 1 year"
-        ExpiresByType image/svg+xml "access plus 1 year"
-        ExpiresByType image/webp "access plus 1 year"
-        ExpiresByType image/vnd.microsoft.icon "access plus 1 week"
-        ExpiresByType image/x-icon "access plus 1 week"
-        ExpiresByType audio/ogg "access plus 1 year"
-        ExpiresByType video/mp4 "access plus 1 year"
-        ExpiresByType video/ogg "access plus 1 year"
-        ExpiresByType video/webm "access plus 1 year"
+    # Media files (long-term caching)
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/vnd.microsoft.icon "access plus 1 week"
+    ExpiresByType image/x-icon "access plus 1 week"
+    ExpiresByType audio/ogg "access plus 1 year"
+    ExpiresByType video/mp4 "access plus 1 year"
+    ExpiresByType video/ogg "access plus 1 year"
+    ExpiresByType video/webm "access plus 1 year"
 
-        # Web fonts
-        ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
-        ExpiresByType font/eot "access plus 1 year"
-        ExpiresByType font/opentype "access plus 1 year"
-        ExpiresByType application/x-font-ttf "access plus 1 year"
-        ExpiresByType application/font-woff "access plus 1 year"
-        ExpiresByType application/x-font-woff "access plus 1 year"
-        ExpiresByType font/woff "access plus 1 year"
-        ExpiresByType font/woff2 "access plus 1 year"
-        ExpiresByType application/font-woff2 "access plus 1 year"
+    # Web fonts
+    ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+    ExpiresByType font/eot "access plus 1 year"
+    ExpiresByType font/opentype "access plus 1 year"
+    ExpiresByType application/x-font-ttf "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+    ExpiresByType application/x-font-woff "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff2 "access plus 1 year"
 
-        # Other assets
-        ExpiresByType text/x-cross-domain-policy "access plus 1 week"
-    </IfModule>
+    # Other assets
+    ExpiresByType text/x-cross-domain-policy "access plus 1 week"
+  </IfModule>
 
-    <IfModule mod_brotli.c>
-        # Brotli Compression (newer, for supporting browsers)
-        AddOutputFilterByType BROTLI text/plain text/html text/xml text/css text/vtt text/x-component
-        AddOutputFilterByType BROTLI application/xml application/xhtml+xml application/rss+xml application/atom+xml
-        AddOutputFilterByType BROTLI application/javascript application/json application/ld+json
-        AddOutputFilterByType BROTLI application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
-    </IfModule>
+  <IfModule mod_brotli.c>
+    # Brotli Compression (newer, for supporting browsers)
+    AddOutputFilterByType BROTLI text/plain text/html text/xml text/css text/vtt text/x-component
+    AddOutputFilterByType BROTLI application/xml application/xhtml+xml application/rss+xml application/atom+xml
+    AddOutputFilterByType BROTLI application/javascript application/json application/ld+json
+    AddOutputFilterByType BROTLI application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
+  </IfModule>
 
-    <IfModule mod_deflate.c>
-        # Gzip Compression (for older browsers / fallback)
-        AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/vtt text/x-component
-        AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml application/atom+xml
-        AddOutputFilterByType DEFLATE application/javascript application/json application/ld+json
-        AddOutputFilterByType DEFLATE application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
+  <IfModule mod_deflate.c>
+    # Gzip Compression (for older browsers / fallback)
+    AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/vtt text/x-component
+    AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml application/atom+xml
+    AddOutputFilterByType DEFLATE application/javascript application/json application/ld+json
+    AddOutputFilterByType DEFLATE application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
 
-        # Do not compress already compressed or binary files
-        SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|svg|webp|avi|mp4|mp3|mov|ogg|ogv|pdf|zip)$ no-gzip dont-vary
+    # Do not compress already compressed or binary files
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|svg|webp|avi|mp4|mp3|mov|ogg|ogv|pdf|zip)$ no-gzip dont-vary
 
-        # Adjust for problematic browser versions
-        BrowserMatch ^Mozilla/4 gzip-only-text/html
-        BrowserMatch ^Mozilla/4\.0[678] no-gzip
-        BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+    # Adjust for problematic browser versions
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
 
-        Header append Vary User-Agent env=!dont-vary
-    </IfModule>
+    Header append Vary User-Agent env=!dont-vary
+  </IfModule>
 </IfModule>
 
 # 4) Security & WAF Filters

@@ -1,0 +1,189 @@
+# ----------------------------------------------------------------------
+# BEGIN i2oz .htaccess (Performance & Security Enhancements)
+# ----------------------------------------------------------------------
+
+# === Global Settings ===
+Options -Indexes
+ServerSignature Off
+FileETag None
+
+# 1) CORS & Security Headers
+<IfModule mod_headers.c>
+  Header unset X-Powered-By
+  Header unset ETag
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+  Header always set Content-Security-Policy "upgrade-insecure-requests"
+  Header always set Permissions-Policy "geolocation=(), midi=(), sync-xhr=(), microphone=(), camera=(), fullscreen=(self)"
+  <FilesMatch "\.(ttf|ttc|otf|eot|woff2?|font\.css|css|js|mjs|gif|png|jpe?g|svgz?|ico|webp)$">
+    Header set Access-Control-Allow-Origin "*"
+  </FilesMatch>
+  <FilesMatch "\.(ico|pdf|flv|swf|js|mjs|css|gif|png|jpe?g|svgz?|webp|woff2?|woff|ttf)$">
+    Header set Cache-Control "max-age=31557600, public"
+  </FilesMatch>
+</IfModule>
+
+# 2) Block Unwanted Files
+<IfModule mod_alias.c>
+  RedirectMatch 403 (?i)\.php\.suspected$
+  RedirectMatch 403 (?i)^/autodiscover/autodiscover\.xml$
+  RedirectMatch 403 (?i)^/apple-app-site-association$
+  RedirectMatch 403 (?i)^/wp-content/debug\.log$
+</IfModule>
+
+# 3) Performance (only if NOT using LiteSpeed)
+<IfModule !LiteSpeed>
+    <IfModule mod_expires.c>
+        ExpiresActive On
+        ExpiresDefault "access plus 1 month"
+
+        # Stylesheets and Scripts
+        ExpiresByType text/css "access plus 1 year"
+        ExpiresByType application/javascript "access plus 1 year"
+        ExpiresByType application/x-javascript "access plus 1 year"
+        ExpiresByType text/javascript "access plus 1 year"
+
+        # Data interchange formats
+        ExpiresByType application/atom+xml "access plus 1 hour"
+        ExpiresByType application/rss+xml "access plus 1 hour"
+        ExpiresByType application/rdf+xml "access plus 1 hour"
+        ExpiresByType application/json "access plus 0 seconds"
+        ExpiresByType application/ld+json "access plus 0 seconds"
+        ExpiresByType application/schema+json "access plus 0 seconds"
+        ExpiresByType application/vnd.geo+json "access plus 0 seconds"
+        ExpiresByType application/xml "access plus 0 seconds"
+        ExpiresByType text/xml "access plus 0 seconds"
+        ExpiresByType text/html "access plus 0 seconds"
+
+        # Media files (long-term caching)
+        ExpiresByType image/gif "access plus 1 year"
+        ExpiresByType image/jpeg "access plus 1 year"
+        ExpiresByType image/png "access plus 1 year"
+        ExpiresByType image/svg+xml "access plus 1 year"
+        ExpiresByType image/webp "access plus 1 year"
+        ExpiresByType image/vnd.microsoft.icon "access plus 1 week"
+        ExpiresByType image/x-icon "access plus 1 week"
+        ExpiresByType audio/ogg "access plus 1 year"
+        ExpiresByType video/mp4 "access plus 1 year"
+        ExpiresByType video/ogg "access plus 1 year"
+        ExpiresByType video/webm "access plus 1 year"
+
+        # Web fonts
+        ExpiresByType application/vnd.ms-fontobject "access plus 1 year"
+        ExpiresByType font/eot "access plus 1 year"
+        ExpiresByType font/opentype "access plus 1 year"
+        ExpiresByType application/x-font-ttf "access plus 1 year"
+        ExpiresByType application/font-woff "access plus 1 year"
+        ExpiresByType application/x-font-woff "access plus 1 year"
+        ExpiresByType font/woff "access plus 1 year"
+        ExpiresByType font/woff2 "access plus 1 year"
+        ExpiresByType application/font-woff2 "access plus 1 year"
+
+        # Other assets
+        ExpiresByType text/x-cross-domain-policy "access plus 1 week"
+    </IfModule>
+
+    <IfModule mod_brotli.c>
+        # Brotli Compression (newer, for supporting browsers)
+        AddOutputFilterByType BROTLI text/plain text/html text/xml text/css text/vtt text/x-component
+        AddOutputFilterByType BROTLI application/xml application/xhtml+xml application/rss+xml application/atom+xml
+        AddOutputFilterByType BROTLI application/javascript application/json application/ld+json
+        AddOutputFilterByType BROTLI application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
+    </IfModule>
+
+    <IfModule mod_deflate.c>
+        # Gzip Compression (for older browsers / fallback)
+        AddOutputFilterByType DEFLATE text/plain text/html text/xml text/css text/vtt text/x-component
+        AddOutputFilterByType DEFLATE application/xml application/xhtml+xml application/rss+xml application/atom+xml
+        AddOutputFilterByType DEFLATE application/javascript application/json application/ld+json
+        AddOutputFilterByType DEFLATE application/vnd.ms-fontobject application/x-font-ttf application/font-woff application/font-woff2 application/x-font-woff image/svg+xml image/x-icon
+
+        # Do not compress already compressed or binary files
+        SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|svg|webp|avi|mp4|mp3|mov|ogg|ogv|pdf|zip)$ no-gzip dont-vary
+
+        # Adjust for problematic browser versions
+        BrowserMatch ^Mozilla/4 gzip-only-text/html
+        BrowserMatch ^Mozilla/4\.0[678] no-gzip
+        BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+
+        Header append Vary User-Agent env=!dont-vary
+    </IfModule>
+</IfModule>
+
+# 4) Security & WAF Filters
+
+# Allow Local & Trusted IPs
+SetEnvIf REMOTE_ADDR "^127\.0\.0\.1$" allowed_ip
+SetEnvIf REMOTE_ADDR "^::1$" allowed_ip
+SetEnvIf REMOTE_ADDR "^192\.168\.1\." allowed_ip
+
+# Allow Server IP Adress(es) - E.g. 192\.168\.1\.100 (ESCAPED)
+#SetEnvIf REMOTE_ADDR "^YOUR_SERVER_IP_ESCAPED_1$" allowed_ip
+#SetEnvIf REMOTE_ADDR "^YOUR_SERVER_IP_ESCAPED_2$" allowed_ip
+#SetEnvIf REMOTE_ADDR "^YOUR_ADMIN_IP_ESCAPED$" allowed_ip
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  ## 4.1) Block Malicious Query Strings
+  RewriteCond %{QUERY_STRING} ^(%2d|-)[^=]+$ [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:%3C|<).*?(?:%3E|>) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:%0A|%0D|%00) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:etc/passwd|etc/shadow) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:GLOBALS|mosconfig|_REQUEST) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:wp-config\.php) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:thumbs?\.php|timthumb) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:base64_encode|eval\() [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:<script|%3Cscript) [NC,OR]
+  RewriteCond %{QUERY_STRING} \.\./ [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.2) Block Malicious URIs
+  RewriteCond %{REQUEST_URI} \{.+?\} [NC,OR]
+  RewriteCond %{REQUEST_URI} (?:%22|%27) [NC,OR]
+  RewriteCond %{REQUEST_URI} \.\./ [NC,OR]
+  RewriteCond %{REQUEST_URI} /(?i)(?:eval|config|phpunit)\.php [NC,OR]
+  RewriteCond %{REQUEST_URI} \.(?:bak|old|orig|save)$ [NC,OR]
+  RewriteCond %{REQUEST_URI} (?:<|%3C)script> [NC,OR]
+  RewriteCond %{REQUEST_URI} \.(gz|zip)$ [NC,OR]
+  RewriteCond %{REQUEST_URI} // [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.3) Block Bad Bots & Scanners
+  RewriteCond %{HTTP_USER_AGENT} (?:libwww-perl|python-requests|nikto|sqlmap|nmap|masscan|acunetix|zmeu|sqlninja|dirbuster|arachni|wpscan) [NC,OR]
+  RewriteCond %{HTTP_USER_AGENT} [\x00-\x1F\x7F] [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.4) Block Referer Spam
+  RewriteCond %{HTTP_REFERER} (?:semalt\.com|darodar\.|buttons-for-website\.|floating-share-buttons\.|social-buttons\.com|uptimebot\.net) [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.5) Block Malicious Cookies
+  RewriteCond %{HTTP_COOKIE} (?:%0A|%0D|%00) [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.6) Block Unexpected HTTP Methods
+  RewriteCond %{REQUEST_METHOD} ^(?:TRACE|TRACK|DEBUG|MOVE|PROPFIND|PROPFATCH|MKCOL|COPY|LOCK|UNLOCK|CONNECT)$ [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.7) Block Extremely Long Requests
+  RewriteCond %{THE_REQUEST} (?:YesThisIsAReallyLongRequest|ScanningForResearchPurpose) [NC,OR]
+  RewriteCond %{QUERY_STRING} (?:YesThisIsAReallyLongRequest|ScanningForResearchPurpose) [NC]
+  RewriteRule .* - [F,L]
+
+  ## 4.8) Disable User Enumeration
+  RewriteCond %{REQUEST_URI} ^/wp-json/wp/v2/users [OR]
+  RewriteCond %{QUERY_STRING} \bauthor=\d+\b
+  RewriteRule .* - [F,L]
+
+  ## 4.9) Protect Sensitive Files & Directories
+  RewriteCond %{ENV:allowed_ip} !=1
+  RewriteRule ^(?:\.env|\.gitignore|\.htaccess|\.htpasswd|web\.config|readme\.(?:html|md)|liesmich\.html|license\.txt|wp-config\.php|xmlrpc\.php|error_log|configuration\.php|(?:\w+)?config\.php|wp-admin/includes/.*|wp-includes/.*\.php|wp-content/uploads/.*\.php|administrator/.*|libraries/.*|core/.*|sites/[^/]+/settings\.php|app/etc/.*|lib/internal/.*|pub/\.user\.ini|composer\.(?:json|lock)|package\.json|phpserver\.xml|config/.*|app/config/parameters\.php|artisan|phpunit\.xml|webpack\.mix\.js|(?:app|bootstrap|config|database|resources|routes|storage|tests|vendor)/.*|(?:application|system|tests|writable)/.*|src/.*|internal_data/.*|install/.*|config\.php|(?i:\.git(?:/.*|$)|\.svn(?:/.*|$)|\.hg(?:/.*|$)))$ - [F,L]
+</IfModule>
+
+# ----------------------------------------------------------------------
+# END i2oz .htaccess (Performance & Security Enhancements)
+# ----------------------------------------------------------------------

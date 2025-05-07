@@ -41,8 +41,8 @@ A performance- and security-focused Apache `.htaccess` configuration for PHP app
 3. **Merge** above existing CMS rules if present.
 4. **Customize** IP placeholders:
    ```apache
-   SetEnvIf REMOTE_ADDR "^YOUR_SERVER_IP_ESCAPED_1$" allow_ip
-   SetEnvIf REMOTE_ADDR "^YOUR_ADMIN_IP_ESCAPED$" allow_ip
+   SetEnvIf REMOTE_ADDR "^YOUR_SERVER_IP_ESCAPED$" allowed_ip
+   SetEnvIf REMOTE_ADDR "^YOUR_ADMIN_IP_ESCAPED$" allowed_ip
    ```
 5. **(Optional)** Comment out `Strict-Transport-Security` if not using HTTPS.
 6. **Test** in browser & DevTools; look for security headers and ensure no 403 on normal pages.

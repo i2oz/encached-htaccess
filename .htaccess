@@ -153,7 +153,7 @@ SetEnvIf REMOTE_ADDR "^192\.168\.1\." allowed_ip
   RewriteRule .* - [F,L]
 
   ## 4.3) Block Bad Bots & Scanners
-  RewriteCond %{HTTP_USER_AGENT} (?:libwww-perl|python-requests|nikto|sqlmap|nmap|masscan|acunetix|zmeu|sqlninja|dirbuster|arachni|wpscan) [NC,OR]
+  RewriteCond %{HTTP_USER_AGENT} (?:python-requests|nikto|sqlmap|nmap|masscan|acunetix|zmeu|sqlninja|dirbuster|arachni|wpscan) [NC,OR]
   RewriteCond %{HTTP_USER_AGENT} [\x00-\x1F\x7F] [NC]
   RewriteRule .* - [F,L]
 
